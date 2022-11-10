@@ -1,0 +1,82 @@
+<!doctype html>
+
+<html>
+<head>
+    <title>Labyrinthe</title>
+    <script language="JavaScript">
+        let m = 'm'; //représente un mur
+        let p = 'p'; //représente le personnage
+        let b = 'b'; //représente le chemin
+        let f = "f"; //représente le trophée 
+
+        let xperso = 1; //position initial du personnage sur l'axe X
+        let yperso = 1; //postition initial du personnage sur l'axe Y
+
+        //tableau à double entrée représentant votre labyrinthe, vous pouvez le modifier pour comprendre le fonctionnement
+        let labyCoordinate = [
+            [m, m, m, m, m, m, m, m, m, m],
+            [m, p, m, b, b, b, b, b, b, m],
+            [m, b, m, b, m, m, m, b, m, m],
+            [m, b, m, b, m, b, m, b, b, m],
+            [m, b, b, b, m, b, m, m, b, m],
+            [m, b, m, b, m, b, b, b, b, f],
+            [m, m, m, m, m, m, m, m, m, m]];
+
+
+        function affichage() //ne rien modifier dans cette fonction
+        {
+            let elementLaby = document.querySelector("#laby");
+
+            let html = "<table border=0 cellspacing=0 cellpadding=0>";
+
+
+            for (i = 0; i < 7; i++) {
+                html += "<tr>";
+                for (j = 0; j < 10; j++) {
+
+                    if (labyCoordinate[i][j] == m) {
+                        html += "<td>";
+                        html += "<img width='52' height='52' src='assets/stonewall.png'>";
+                        html += "</td>";
+                    }
+                    if (labyCoordinate[i][j] == p) {
+                        html += "<td>";
+                        html += "<img width='52' height='52' style='background-image:assets/ground.png' src='assets/heros.png'>";
+                        html += "</td>";
+                    }
+                    if (labyCoordinate[i][j] == b) {
+                        html += "<td>";
+                        html += "<img width='52' height='52' src='assets/ground.png'>";
+                        html += "</td>";
+                    }
+
+
+                    if (labyCoordinate[i][j] == f) {
+                        html += "<td>";
+                        html += "<img width='52' height='52'src='assets/trophy.png'>";
+                        html += "</td>";
+                    }
+
+
+                }
+                html += "</tr>";
+            }
+
+            html += "</table>";
+            elementLaby.innerHTML = html;
+        }
+
+    </script>
+</head>
+<body>
+<div id="laby">
+
+</div>
+
+<input type="button" value="GO" onclick="affichage();"><br/><BR><BR>
+
+<!-- ajouter vos boutons de déplacement ici -->
+
+
+</body>
+</html>
