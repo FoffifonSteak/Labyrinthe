@@ -1,63 +1,68 @@
 <!doctype html>
 
-<html>
+<html lang="fr">
 <head>
     <title>Labyrinthe</title>
     <script language="JavaScript">
+        let startTime = null
         let m = 'm'; //représente un mur
         let p = 'p'; //représente le personnage
         let b = 'b'; //représente le chemin
-        let f = "f"; //représente le trophée 
+        let f = "f"; //représente le trophée
 
-        let xperso = 1; //position initial du personnage sur l'axe X
+        let xperso = 3; //position initial du personnage sur l'axe X
         let yperso = 1; //postition initial du personnage sur l'axe Y
 
-        //tableau à double entrée représentant votre labyrinthe, vous pouvez le modifier pour comprendre le fonctionnement
+        let haut = document.querySelector("#haut")
+        let bas = document.querySelector("#bas")
+        let gauche = document.querySelector("#gauche")
+        let droite = document.querySelector("#droite")
+
+
+        //tableau à double entrée représentant votre labyrint
+        //
+        // he, vous pouvez le modifier pour comprendre le fonctionnement
         let labyCoordinate = [
-            [m, m, m, m, m, m, m, m, m, m],
-            [m, p, m, b, b, b, b, b, b, m],
-            [m, b, m, b, m, m, m, b, m, m],
-            [m, b, m, b, m, b, m, b, b, m],
-            [m, b, b, b, m, b, m, m, b, m],
-            [m, b, m, b, m, b, b, b, b, f],
+            [m, m, m, m, m, m, m, b, m, f],
+            [m, b, m, p, b, b, b, b, b, b],
+            [m, b, b, b, m, m, m, b, m, m],
+            [m, b, m, b, m, m, m, b, b, m],
+            [m, b, b, b, b, b, m, m, b, m],
+            [m, b, m, b, m, b, b, b, b, m],
             [m, m, m, m, m, m, m, m, m, m]];
 
 
-        function affichage() //ne rien modifier dans cette fonction
+        function affiche() //ne rien modifier dans cette fonction
         {
             let elementLaby = document.querySelector("#laby");
 
-            let html = "<table border=0 cellspacing=0 cellpadding=0>";
-
+            let html = "<table style='line-height: 0' border=0 cellspacing=0 cellpadding=0>";
 
             for (i = 0; i < 7; i++) {
                 html += "<tr>";
                 for (j = 0; j < 10; j++) {
-
-                    if (labyCoordinate[i][j] == m) {
-                        html += "<td>";
-                        html += "<img width='52' height='52' src='assets/stonewall.png'>";
-                        html += "</td>";
+                    switch(labyCoordinate[i][j]) {
+                        case m:
+                            html += "<td>";
+                            html += "<img width='52' height='52' src='assets/stonewall.png'>";
+                            html += "</td>";
+                            break;
+                        case p:
+                            html += "<td>";
+                            html += "<img width='52' height='52' style='background-image:assets/ground.png' src='assets/heros.png'>";
+                            html += "</td>";
+                            break;
+                        case b:
+                            html += "<td onclick='mouse(this)'>";
+                            html += "<img width='52' height='52'src='assets/ground.png'>";
+                            html += "</td>";
+                            break;
+                        case f:
+                            html += "<td onclick='mouse(this)'>";
+                            html += "<img width='52' height='52' src='assets/trophy.png'>";
+                            html += "</td>";
+                            break;
                     }
-                    if (labyCoordinate[i][j] == p) {
-                        html += "<td>";
-                        html += "<img width='52' height='52' style='background-image:assets/ground.png' src='assets/heros.png'>";
-                        html += "</td>";
-                    }
-                    if (labyCoordinate[i][j] == b) {
-                        html += "<td>";
-                        html += "<img width='52' height='52' src='assets/ground.png'>";
-                        html += "</td>";
-                    }
-
-
-                    if (labyCoordinate[i][j] == f) {
-                        html += "<td>";
-                        html += "<img width='52' height='52'src='assets/trophy.png'>";
-                        html += "</td>";
-                    }
-
-
                 }
                 html += "</tr>";
             }
@@ -66,6 +71,97 @@
             elementLaby.innerHTML = html;
         }
 
+        function mouvement(direction) {
+            labyCoordinate[yperso][xperso] = b
+            switch (direction) {
+                case "bas":
+                    if (labyCoordinate[yperso + 1][xperso] === m || yperso + 1 >= labyCoordinate.length) {
+                        return;
+                    }
+                    yperso++
+                    time()
+                    break;
+                case "haut":
+                    if (labyCoordinate[yperso - 1][xperso] === m || yperso - 1 >= labyCoordinate.length) {
+                        return;
+                    }
+                    yperso--
+                    time()
+                    break;
+                case "droite":
+                    if (labyCoordinate[yperso][xperso + 1] === m || xperso + 1 >= labyCoordinate[yperso].length) {
+                        return;
+                    }
+                    xperso++
+                    time()
+                    break;
+                case "gauche":
+                    if (labyCoordinate[yperso][xperso - 1] === m || xperso - 1 >= labyCoordinate[yperso].length) {
+                        return;
+                    }
+                    xperso--
+                    time()
+                    break;
+            }
+            labyCoordinate[yperso][xperso] = p
+            affiche()
+        }
+
+        document.addEventListener("keydown", (event) => {
+            switch (event.key) {
+                case "ArrowUp":
+                    mouvement("haut")
+                    break;
+                case "ArrowDown":
+                    mouvement("bas")
+                    break;
+                case "ArrowLeft":
+                    mouvement("gauche")
+                    break;
+                case "ArrowRight":
+                    mouvement("droite")
+                    break;
+            }
+        })
+
+        function timer() {
+            startTime = Date.now()
+        }
+
+        function time() {
+            if (labyCoordinate[yperso][xperso] === f) {
+
+                let endTime = Date.now()
+                let timer = endTime - startTime
+                let second = timer / 1000
+                let minute = 0
+                if (second > 60) {
+                    minute++
+                    second -= 60
+                }
+                document.querySelector('#timer').textContent = "Tu as mis " + minute + " minutes et " + Math.floor(second) + " secondes"
+            }
+        }
+
+        function mouse(element) {
+            let x = element.cellIndex;
+            let y = element.parentNode.rowIndex;
+            if (labyCoordinate[y][x] === m) {
+                return;
+            }
+            if (Math.sqrt(Math.pow(x - xperso, 2) + Math.pow(y - yperso, 2)) > 1) {
+                return;
+            }
+
+            labyCoordinate[yperso][xperso] = b;
+            yperso = y;
+            xperso = x;
+            if (labyCoordinate[y][x] === f) {
+                time();
+            }
+            labyCoordinate[y][x] = 'p';
+            affiche();
+        }
     </script>
 </head>
 <body>
@@ -73,10 +169,16 @@
 
 </div>
 
-<input type="button" value="GO" onclick="affichage();"><br/><BR><BR>
+<input type="button" value="GO" onclick="timer(); affiche();"><br/><BR><BR>
 
 <!-- ajouter vos boutons de déplacement ici -->
-
-
+<div style="display: block; text-align: center">
+    <input id="haut" type="button" value="haut" onclick="mouvement('haut')">
+    <br>
+    <input id="gauche" type="button" value="gauche" onclick="mouvement('gauche')">
+    <input id="bas" type="button" value="bas" onclick="mouvement('bas')">
+    <input id="droite" type="button" value="droite" onclick="mouvement('droite')">
+</div>
+<span id="timer"></span>
 </body>
 </html>
